@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { setTextRange } from 'typescript';
+//import { setTextRange } from 'typescript';
 
 interface AuthState {
   token: string | null;
