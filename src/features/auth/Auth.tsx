@@ -15,7 +15,7 @@ const schema = Yup.object().shape({
   password: Yup.string().required('Without a password, "None shall pass!"'),
   email: Yup.string().email('Please provide a valid email address (abc@xy.z)'),
 });
-
+console.log(schema);
 const Auth: FC = () => {
   const { handleSubmit, register, errors } = useForm<User>({
    // validationSchema: schema,
