@@ -1,31 +1,35 @@
-import {createSlice,PayloadAction} from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { setTextRange } from 'typescript';
 
-interface AuthState{
-    token:string|null,
-    isAuthenticated:boolean
+interface AuthState {
+  token: string | null;
+  isAuthenticated: boolean;
 }
 
-const initialState:AuthState = {
-    token:null,
-    isAuthenticated:false,
-}
+const initialState: AuthState = {
+  token: null,
+  isAuthenticated: false,
+};
 
 const auth = createSlice({
-    name:'auth',
-    initialState,
-    reducers:{
-        saveToken:(state,{payload}:PayloadAction<string>) => {
-            if(payload){
-                state.token=payload;
-            }
-        },
-        clearToken:(state,{payload}:PayloadAction<string>) => {
-            state.token=null;
-        },
-        setAuthState:(state,{payload}:PayloadAction<string>) => {
-            state.isAuthenticated=true;
-        }
-    }
-})
-export const {saveToken,clearToken,setAuthState} = auth.actions;
+  name: 'auth',
+  initialState,
+  reducers: {
+    saveToken(state, { payload }: PayloadAction<string>) {
+      if (payload) {
+        state.token = payload;
+      }
+    },
+    clearToken(state) {
+      state.token = null;
+      state.isAuthenticated=false;
+    },
+    setAuthState(state, { payload }: PayloadAction<boolean>) {
+      state.isAuthenticated = payload;
+    },
+  },
+});
+
+export const { saveToken, clearToken, setAuthState } = auth.actions;
+
 export default auth.reducer;

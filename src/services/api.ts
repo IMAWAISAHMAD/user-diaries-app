@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { showAlert } from '../utils/util';
 
 const http: AxiosInstance = axios.create({
-  baseURL: 'https://diaries.app',
+  baseURL: 'https://userdiaries.surge.sh/',
 });
 
 http.defaults.headers.post['Content-Type'] = 'application/json';
@@ -14,10 +14,10 @@ http.interceptors.response.use(
     }
   },
   (error: AxiosError) => {
-    const { response, request }: {
-      response?: AxiosResponse;
-      request?: XMLHttpRequest;
-    } = error;
+    const {
+      response,
+      request,
+    }: { response?: AxiosResponse; request?: XMLHttpRequest } = error;
     if (response) {
       if (response.status >= 400 && response.status < 500) {
         showAlert(response.data?.data?.message, 'error');

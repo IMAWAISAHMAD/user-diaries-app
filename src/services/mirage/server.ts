@@ -1,62 +1,61 @@
-import {Server,Model,Factory,hasMany,belongsTo,Response} from 'miragejs'
-import user from './routes/user'
-import * as diary from './routes/diary'
+import { Server, Model, Factory, Response, belongsTo, hasMany } from 'miragejs';
+import user from './routes/user';
+import * as diary from './routes/diary';
 
-export const handleErrors = (error:any,message="An Error Occured") =>{
+export const handleErrors = (error: any, message = 'An error ocurred') => {
+  console.error('Error: ', error);
+  return new Response(400, undefined, {
+    data: {
+      message,
+      isError: true,
+    },
+  });
+};
+
+export const setupServer = (env?: string): Server => {
+  return new Server({
+    environment: env ?? 'development',
+
+    models: {
+      entry: Model.extend({
+        diary: belongsTo(),
+      }),
+      diary: Model.extend({
+        entry: hasMany(),
+        user: belongsTo(),
+      }),
+      user: Model.extend({
+        diary: hasMany(),
+      }),
+    },
+
+    factories: {
+      user: Factory.extend({
+        username: 'test',
+        password: 'password',
+        email: 'test@email.com',
+      }),
+    },
+
+    seeds: (server): any => {
+      server.create('user');
+    },
+
+    routes(): void {
     
-    console.error("Error: ", error);
-    return new Response(400,undefined,{
-        data:{
-            message,
-            isError:true
-        }
-    })
-}
+      this.urlPrefix ='https://userdiaries.surge.sh/'
 
-export const setupServer = (env?:string):Server => {
-    return new Server({
-        environment:env??'development',
-        models:{
-            diary:Model.extend({
-                entries:hasMany(),
-                user:belongsTo()
-            }),
-            user:Model.extend({
-                diary:hasMany(),
+      this.get('/diaries/entries/:id', diary.getEntries);
+      this.get('/diaries/:id', diary.getDiaries);
 
-            }),
-            entry:Model.extend({
-                diary:belongsTo(),  
-            })
-        },
+      this.post('/auth/login', user.login);
+      this.post('/auth/signup', user.signup);
 
-        factories:{
-            user:Factory.extend({
-                username:'test',
-                email:'test@email.com',
-                password:'password'
-            })
-        },
+      this.post('/diaries/', diary.create);
+      this.post('/diaries/entry/:id', diary.addEntry);
 
-        seeds:(server):any=>{
-            server.create('user')
-        },
-
-        routes():void{
-            this.urlPrefix = 'https://diaries.app';
-
-            this.get('/diaries/entries/:id', diary.getEntries);
-            this.get('/diaries/:id', diary.getDiaries);
-
-            this.post('/auth/login', user.login);
-            this.post('/auth/signup', user.signup);
-
-            this.post('/diaries/', diary.createDiary);
-            this.post('/diaries/entry/:id', diary.createEntry);
-
-            this.put('/diaries/entry/:id', diary.updateEntry);
-            this.put('/diaries/:id', diary.updateDiary);
-        }
-    })
-
-}
+      this.put('/diaries/entry/:id', diary.updateEntry);
+      this.put('/diaries/:id', diary.updateDiary);
+    },
+  });
+};
